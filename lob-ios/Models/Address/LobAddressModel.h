@@ -21,4 +21,17 @@
 @property(nonatomic, strong) NSString *addressZip;
 @property(nonatomic, strong) NSString *addressCountry;
 
+- (instancetype)initAddressWithId:(NSString *)addressId;
+
+- (instancetype)initAddressWithName:(NSString *)name
+                              email:(NSString *)email
+                              phone:(NSString *)phone
+                       addressLine1:(NSString *)addressLine1
+                       addressLine2:(NSString *)addressLine2
+                        addressCity:(NSString *)addressCity
+                       addressState:(NSString *)addressState
+                         addressZip:(NSString *)addressZip
+                     addressCountry:(NSString *)addressCountry;
+
+
 @end

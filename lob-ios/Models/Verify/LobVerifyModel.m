@@ -14,23 +14,35 @@
 @synthesize dateCreated = _dateCreated;
 @synthesize dateModified = _dateModified;
 
--(instancetype)initWithDictionary:(NSDictionary *)dict {
-    if(self = [super init]) {
-        _dateCreated = NULL;
-        _dateModified = NULL;
+- (instancetype)initWithDictionary:(NSDictionary *)dict
+{
+    if(self = [super init])
+    {
+        self.dateCreated = NULL;
+        self.dateModified = NULL;
         
-        _address = [LobAddressModel initWithDictionary:dict[@"address"]];
-        _message = dict[@"message"];
+        self.address = [LobAddressModel initWithDictionary:dict[@"address"]];
+        self.message = dict[@"message"];
     }
+    return self;
+}
+
+- (instancetype)initVerifyModelWithMessage:(NSString*)message
+                                   address:(LobAddressModel*)address
+{
+    self = [self initWithDictionary:@{@"message" : message}];
+    self.address = address;
+    
     return self;
 }
 
 #pragma mark -
 #pragma mark Description
 
--(NSString*)description {
+- (NSString *)description
+{
     NSString *format = @"%@ | %@";
-    return [NSString stringWithFormat:format,_message,_address];
+    return [NSString stringWithFormat:format,self.message,self.address];
 }
 
 

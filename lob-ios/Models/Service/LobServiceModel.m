@@ -13,24 +13,39 @@
 @synthesize dateCreated = _dateCreated;
 @synthesize dateModified = _dateModified;
 
--(instancetype)initWithDictionary:(NSDictionary *)dict {
-    if(self = [super init]) {
-        _dateCreated = NULL;
-        _dateModified = NULL;
+- (instancetype)initWithDictionary:(NSDictionary *)dict
+{
+    if(self = [super init])
+    {
+        self.dateCreated = NULL;
+        self.dateModified = NULL;
         
-        _serviceId = dict[@"id"];
-        _name = dict[@"name"];
-        _description = dict[@"description"];
+        self.serviceId = dict[@"id"];
+        self.name = dict[@"name"];
+        self.description = dict[@"description"];
     }
     return self;
+}
+
+- (instancetype)initServiceWithId:(NSString*)serviceId
+{
+    return [self initWithDictionary:@{@"id" : serviceId}];
+}
+
+- (instancetype)initServiceWithName:(NSString*)name
+                        description:(NSString*)description
+{
+    return [self initWithDictionary:@{@"name" : name,
+                                      @"description" : description}];
 }
 
 #pragma mark -
 #pragma mark Description
 
--(NSString*)description {
+- (NSString *)description
+{
     NSString *format = @"(%@) %@, %@";
-    return [NSString stringWithFormat:format,_serviceId,_name,_description];
+    return [NSString stringWithFormat:format,self.serviceId,self.name,self.description];
 }
 
 @end

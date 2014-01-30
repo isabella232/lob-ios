@@ -18,4 +18,12 @@
 @property(nonatomic, strong) LobAddressModel *bankAddress;
 @property(nonatomic, strong) LobAddressModel *accountAddress;
 
+- (instancetype)initBankAccountWithId:(NSString *)bankId;
+
+- (instancetype)initBankAccountWithRoutingNumber:(NSString *)routingNumber
+                                   accountNumber:(NSString *)accountNumber
+                                        bankCode:(NSString *)bankCode
+                                     bankAddress:(LobAddressModel *)bankAddress
+                                  accountAddress:(LobAddressModel *)accountAddress;
+
 @end

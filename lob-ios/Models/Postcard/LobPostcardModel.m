@@ -12,49 +12,90 @@
 
 @implementation LobPostcardModel
 
--(instancetype)initWithDictionary:(NSDictionary *)dict {
-    if(self = [super initWithDictionary:dict]) {
-        _postcardId = dict[@"id"];
-        _name = dict[@"name"];
-        _message = dict[@"message"];
-        _toAddress = [LobAddressModel initWithDictionary:dict[@"to"]];
-        _fromAddress = [LobAddressModel initWithDictionary:dict[@"from"]];
-        _status = dict[@"status"];
-        _price = dict[@"price"];
-        _frontUrl = dict[@"front"];
-        _backUrl = dict[@"back"];
+-(instancetype)initWithDictionary:(NSDictionary *)dict
+{
+    if(self = [super initWithDictionary:dict])
+    {
+        self.postcardId = dict[@"id"];
+        self.name = dict[@"name"];
+        self.message = dict[@"message"];
+        self.toAddress = [LobAddressModel initWithDictionary:dict[@"to"]];
+        self.fromAddress = [LobAddressModel initWithDictionary:dict[@"from"]];
+        self.status = dict[@"status"];
+        self.price = dict[@"price"];
+        self.frontUrl = dict[@"front"];
+        self.backUrl = dict[@"back"];
         
-        if(dict[@"full_bleed"]) _fullBleed = [dict[@"full_bleed"] boolValue];
-        else _fullBleed = false;
+        if(dict[@"full_bleed"]) self.fullBleed = [dict[@"full_bleed"] boolValue];
+        else self.fullBleed = false;
     }
+    return self;
+}
+
+- (instancetype)initPostcardWithId:(NSString*)postcardId
+{
+    return [self initWithDictionary:@{@"id" : postcardId}];
+}
+
+- (instancetype)initPostcardWithName:(NSString*)name
+                             message:(NSString*)message
+                           toAddress:(LobAddressModel*)toAddress
+                         fromAddress:(LobAddressModel*)fromAddress
+                              status:(NSString*)status
+                               price:(NSString*)price
+                            frontUrl:(NSString*)frontUrl
+                             backUrl:(NSString*)backUrl
+                           fullBleed:(BOOL)fullBleed
+{
+    NSDictionary *dict = @{@"name" : name,
+                           @"message" : message,
+                           @"status" : status,
+                           @"price" : price,
+                           @"front" : frontUrl,
+                           @"back" : backUrl};
+    
+    self = [self initWithDictionary:dict];
+    
+    self.toAddress = toAddress;
+    self.fromAddress = fromAddress;
+    self.fullBleed = fullBleed;
+    
     return self;
 }
 
 #pragma mark -
 #pragma mark Description
 
--(NSString*)description {
+- (NSString *)description
+{
     NSString *format = @"(%@) %@, %@ | %@ | %@ | %@, %@";
-    return [NSString stringWithFormat:format,_postcardId,_name,_message,_toAddress,_fromAddress,_status,_price];
+    return [NSString stringWithFormat:format,self.postcardId,self.name,self.message,self.toAddress,self.fromAddress,self.status,self.price];
 }
 
 #pragma mark -
 #pragma mark Request Methods
 
--(NSString*)urlParamsForCreateRequest {
+- (NSString *)urlParamsForCreateRequest
+{
     NSMutableArray *items = [NSMutableArray array];
     
-    NSArray *nameValues = @[@[@"name" , @"name"],@[@"message" , @"message"],
-                            @[@"status" , @"status"], @[@"price" , @"price"],
-                            @[@"front" , @"frontUrl"], @[@"back" , @"backUrl"]];
+    NSArray *nameValues = @[@[@"name" , @"name"],
+                            @[@"message" , @"message"],
+                            @[@"status" , @"status"],
+                            @[@"price" , @"price"],
+                            @[@"front" , @"frontUrl"],
+                            @[@"back" , @"backUrl"]];
     
 
-    [LobAbstractModel populateItems:items fromPairs:nameValues onObject:self prefix:@""];
+    [LobAbstractModel populateItems:items
+                          fromPairs:nameValues
+                           onObject:self
+                             prefix:@""];
     
-    NSString *toParams = [[self toAddress] urlParamsForInclusionWithPrefix:@"to"];
+    NSString *toParams = [self.toAddress urlParamsForInclusionWithPrefix:@"to"];
     [items addObject:toParams];
     
-    NSString *fromParams = [[self fromAddress] urlParamsForInclusionWithPrefix:@"from"];
+    NSString *fromParams = [self.fromAddress urlParamsForInclusionWithPrefix:@"from"];
     [items addObject:fromParams];
     
     return [LobAbstractModel paramStringWithItems:items];

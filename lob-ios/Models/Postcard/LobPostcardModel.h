@@ -22,4 +22,16 @@
 @property(nonatomic, strong) NSString *backUrl;
 @property(nonatomic, assign) BOOL fullBleed;
 
+- (instancetype)initPostcardWithId:(NSString*)postcardId;
+
+- (instancetype)initPostcardWithName:(NSString*)name
+                             message:(NSString*)message
+                           toAddress:(LobAddressModel*)toAddress
+                         fromAddress:(LobAddressModel*)fromAddress
+                              status:(NSString*)status
+                               price:(NSString*)price
+                            frontUrl:(NSString*)frontUrl
+                             backUrl:(NSString*)backUrl
+                           fullBleed:(BOOL)fullBleed;
+
 @end

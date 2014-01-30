@@ -9,7 +9,37 @@
 #import <XCTest/XCTest.h>
 
 #import "LobLibrary.h"
+
 static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
+
+#define Test_Address_Harry @{@"name" : @"HARRY ZHANG", \
+                             @"email" : [NSNull null], \
+                             @"phone" : [NSNull null], \
+                             @"address_line1" : @"1600 AMPHITHEATRE PKWY", \
+                             @"address_line2" : @"UNIT 199", \
+                             @"address_city" : @"MOUNTAIN VIEW", \
+                             @"address_state" : @"CA", \
+                             @"address_zip" : @"94085", \
+                             @"address_country" : @"UNITED STATES"}
+
+#define Test_BankAddr_Chase @{@"name" : @"Chase Bank", \
+                              @"address_line1" : @"55 Edmonds Street", \
+                              @"address_city" : @"Palo Alto", \
+                              @"address_state" : @"CA", \
+                              @"address_zip" : @"90081", \
+                              @"address_country" : @"US"}
+
+#define Test_Bank_Chase @{@"routing_number" : @"123456789", \
+                          @"account_number" : @"123456789", \
+                          @"bank_code" : @"123456789", \
+                          @"bank_address" : Test_BankAddr_Chase, \
+                          @"account_address" : Test_Address_Harry}
+
+#define Test_Check_Demo @{@"name" : @"Demo Check", \
+                          @"to" : Test_Address_Harry, \
+                          @"bank_account" : @{@"id" : @"bank_8d71faaa228d866"}, \
+                          @"amount" : @"2200", \
+                          @"memo" : @"rent"}
 
 @interface lob_iosTests : XCTestCase {
     LobRequest *request;
@@ -20,14 +50,17 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 
 @implementation lob_iosTests
 
--(void)setUp {
+- (void)setUp
+{
     [super setUp];
     request = [[LobRequest alloc] initWithAPIKey:testApiKey];
     sem = dispatch_semaphore_create(0);
 }
 
--(void)tearDown {
-    while (dispatch_semaphore_wait(sem, DISPATCH_TIME_NOW)) {
+- (void)tearDown
+{
+    while (dispatch_semaphore_wait(sem, DISPATCH_TIME_NOW))
+    {
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:5]];
     }
 
@@ -42,50 +75,82 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Address Tests
  */
 
--(void)testAddressList {
+-(void)testAddressInit
+{
+    LobAddressModel *dictInitAddress = [[LobAddressModel alloc] initWithDictionary:Test_Address_Harry];
+    
+    [self verifyAddressHarry:dictInitAddress testOrigin:@"Address init with dict"];
+    
+    LobAddressModel *paramInitAddress = [[LobAddressModel alloc] initAddressWithName:Test_Address_Harry[@"name"] email:Test_Address_Harry[@"email"] phone:Test_Address_Harry[@"phone"] addressLine1:Test_Address_Harry[@"address_line1"] addressLine2:Test_Address_Harry[@"address_line2"] addressCity:Test_Address_Harry[@"address_city"] addressState:Test_Address_Harry[@"address_state"] addressZip:Test_Address_Harry[@"address_zip"] addressCountry:Test_Address_Harry[@"address_country"]];
+    
+    [self verifyAddressHarry:paramInitAddress testOrigin:@"Address init with params"];
+    
+    dispatch_semaphore_signal(sem);
+}
+
+- (void)testAddressList
+{
     NSLog(@"Test Address List");
     
-    [request listAddressesWithResponse:^(NSArray *addresses, NSError *error) {
+    [request listAddressesWithResponse:^(NSArray *addresses, NSError *error)
+    {
         NSLog(@"*** Address List Response ***");
-        NSLog(@"    Addresses: %@",addresses);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqual(addresses, @[], @"");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
 
--(void)testAddressCreate {
+- (void)testAddressCreate
+{
     NSLog(@"Test Address Create");
 
-    NSDictionary *dict = @{@"name" : @"Harry Zhang", @"email" : @"harry@lob.com",
-                           @"phone" : @"5555555555", @"address_line1" : @"123 Test Street",
-                           @"address_line2" : @"Unit 199", @"address_city" : @"Mountain View",
-                           @"address_state" : @"CA", @"address_zip" : @"94085", @"address_country" : @"US"};
     
-    LobAddressModel *addrModel = [LobAddressModel initWithDictionary:dict];
+    LobAddressModel *addrModel = [LobAddressModel initWithDictionary:Test_Address_Harry];
     
-    [request createAddressWithModel:addrModel withResponse:^(LobAddressModel *addr, NSError *error) {
+    [request createAddressWithModel:addrModel
+                       withResponse:^(LobAddressModel *addr, NSError *error)
+    {
         NSLog(@"*** Address Create Response ***");
-        NSLog(@"    Address: %@",addr);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyAddressHarry:addr testOrigin:@"Address create"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testAddressRetrieve {
+- (void)testAddressRetrieve
+{
     NSLog(@"Test Address Retrieve");
 
-    [request retrieveAddressWithId:@"adr_fa85158b26c3eb7c" withResponse:^(LobAddressModel *addr, NSError *error) {
+    [request retrieveAddressWithId:@"adr_96fb02d7c04aa446"
+                      withResponse:^(LobAddressModel *addr, NSError *error)
+    {
         NSLog(@"*** Address Retrieve Response ***");
-        NSLog(@"    Address: %@",addr);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyAddressHarry:addr testOrigin:@"Address retrieve"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testAddressDelete {
+- (void)testAddressDelete
+{
     NSLog(@"Test Address Delete");
 
-    [request deleteAddressWithId:@"adr_43769b47aed248c2" withResponse:^(NSString *message, NSError *error) {
+    [request deleteAddressWithId:@"adr_43769b47aed248c2"
+                    withResponse:^(NSString *message, NSError *error)
+    {
         NSLog(@"*** Address Delete Response ***");
-        NSLog(@"    Message: %@",message);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqualObjects(message, @"Success! Address has been deleted", @"");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -94,46 +159,50 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Bank Account Tests
  */
 
--(void)testBankAccountList {
+- (void)testBankAccountList
+{
     NSLog(@"Test Bank Account List");
 
-    [request listBankAccountsWithResponse:^(NSArray *accounts, NSError *error) {
+    [request listBankAccountsWithResponse:^(NSArray *accounts, NSError *error)
+    {
         NSLog(@"*** Bank Account List Response ***");
-        NSLog(@"    Accounts: %@",accounts);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqual(accounts, @[], @"");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testBankAccountCreate {
+- (void)testBankAccountCreate
+{
     NSLog(@"Test Bank Account Create");
 
-    NSDictionary *accountAddrDict = @{@"name" : @"Leore Avidar", @"address_line1" : @"123 Test Street",
-                                   @"address_line2" : @"Apt 155", @"address_city" : @"Sunnyvale",
-                                   @"address_state" : @"CA", @"address_zip" : @"94085", @"address_country" : @"US"};
-    
-    NSDictionary *bankAddrDict = @{@"name" : @"Chase Bank", @"address_line1" : @"55 Edmonds Street",
-                                   @"address_city" : @"Palo Alto", @"address_state" : @"CA",
-                                   @"address_zip" : @"90081", @"address_country" : @"US"};
-
-    
-    NSDictionary *bankDict = @{@"routing_number" : @"123456789", @"account_number" : @"123456789",
-                               @"bank_code" : @"123456789", @"bank_address" : bankAddrDict,
-                               @"account_address" : accountAddrDict};
-
-    LobBankAccountModel *bankModel = [LobBankAccountModel initWithDictionary:bankDict];
-    [request createBankAccountWithModel:bankModel withResponse:^(LobBankAccountModel *account, NSError *error) {
+    LobBankAccountModel *bankModel = [LobBankAccountModel initWithDictionary:Test_Bank_Chase];
+    [request createBankAccountWithModel:bankModel
+                           withResponse:^(LobBankAccountModel *account, NSError *error)
+    {
         NSLog(@"*** Bank Account Create Response ***");
-        NSLog(@"    Bank Account: %@",account);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyBankChase:account testOrigin:@"Bank account create"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testBankAccountRetrieve {
+- (void)testBankAccountRetrieve
+{
     NSLog(@"Test Bank Account Retrieve");
 
-    [request retrieveBankAccountWithId:@"bank_dfceb4a2a05b57e" withResponse:^(LobBankAccountModel *account, NSError *error) {
+    [request retrieveBankAccountWithId:@"bank_8d71faaa228d866"
+                          withResponse:^(LobBankAccountModel *account, NSError *error)
+    {
         NSLog(@"*** Bank Account Retrieve Response ***");
-        NSLog(@"    Bank Account: %@",account);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyBankChase:account testOrigin:@"Bank account retrieve"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -142,42 +211,49 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Check Tests
  */
 
--(void)testCheckList {
+- (void)testCheckList
+{
     NSLog(@"Test Check List");
 
-    [request listChecksWithResponse:^(NSArray *checks, NSError *error) {
+    [request listChecksWithResponse:^(NSArray *checks, NSError *error)
+    {
         NSLog(@"*** Check List Response ***");
-        NSLog(@"    Checks: %@",checks);
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqual(checks, @[], @"");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testCheckCreate {
+- (void)testCheckCreate
+{
     NSLog(@"Test Check Create");
-
-    NSDictionary *toAddrDict = @{@"name" : @"Harry Zhang", @"address_line1" : @"123 Test Street",
-                                 @"address_city" : @"Mountian View", @"address_state" : @"CA",
-                                 @"address_zip" : @"94041", @"address_country" : @"US"};
     
-    
-    NSDictionary *checkDict = @{@"name" : @"Demo Check", @"to" : toAddrDict,
-                                @"bank_account" : @{@"id" : @"bank_3e64d9904356b20"},
-                                @"amount" : @"2200", @"memo" : @"rent"};
-    
-    LobCheckModel *checkModel = [LobCheckModel initWithDictionary:checkDict];
-    [request createCheckWithModel:checkModel withResponse:^(LobCheckModel *check, NSError *error) {
+    LobCheckModel *checkModel = [LobCheckModel initWithDictionary:Test_Check_Demo];
+    [request createCheckWithModel:checkModel
+                     withResponse:^(LobCheckModel *check, NSError *error)
+    {
         NSLog(@"*** Check Create Response ***");
-        NSLog(@"    Check: %@",check);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyCheckDemo:check testOrigin:@"Check create"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testCheckRetrieve {
+- (void)testCheckRetrieve
+{
     NSLog(@"Test Check Retrieve");
 
-    [request retrieveCheckWithId:@"chk_a70f7e3893f8f1d8" withResponse:^(LobCheckModel *check, NSError *error) {
+    [request retrieveCheckWithId:@"chk_7ac6cd33853d0f79"
+                    withResponse:^(LobCheckModel *check, NSError *error)
+    {
         NSLog(@"*** Check Retrieve Response ***");
-        NSLog(@"    Check: %@",check);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyCheckDemo:check testOrigin:@"Check retrieve"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -186,12 +262,21 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Country Tests
  */
 
--(void)testCountryList {
+- (void)testCountryList
+{
     NSLog(@"Test Country List");
 
-    [request listCountriesWithResponse:^(NSArray *countries, NSError *error) {
+    [request listCountriesWithResponse:^(NSArray *countries, NSError *error)
+    {
         NSLog(@"*** Country List Response ***");
-        NSLog(@"    Countries: %@",countries);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+ 
+        LobCountryModel *us = countries[0];
+        XCTAssertNotNil(us, @"");
+        XCTAssertEqualObjects(us.name, @"United States", @"Country name failure");
+        XCTAssertEqualObjects(us.shortName, @"US", @"Country short name failure");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -200,42 +285,61 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Job Tests
  */
 
--(void)testJobList {
+- (void)testJobList
+{
     NSLog(@"Test Job List");
 
-    [request listJobsWithResponse:^(NSArray *jobs, NSError *error) {
+    [request listJobsWithResponse:^(NSArray *jobs, NSError *error)
+    {
         NSLog(@"*** Job List Response ***");
-        NSLog(@"    Jobs: %@",jobs);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqual(jobs, @[], @"");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testJobCreate {
+- (void)testJobCreate
+{
     NSLog(@"Test Job Create");
 
-    NSDictionary *objectDict = @{@"name" : @"Go Blue", @"setting" : @{@"id" : @"100"},
+    NSDictionary *objectDict = @{@"name" : @"Go Blue",
+                                 @"setting" : @{@"id" : @"100"},
                                  @"file" : @"https://www.lob.com/goblue.pdf"};
     
-    NSDictionary *jobDict = @{@"name" : @"Michigan fan letter", @"to" : @{@"id" : @"adr_43769b47aed248c2"},
-                              @"from" : @{@"id" : @"adr_7f9ece71fbca3796"},
+    NSDictionary *jobDict = @{@"name" : @"Michigan fan letter",
+                              @"to" : Test_Address_Harry,
+                              @"from" : Test_Address_Harry,
                               @"objects" : @[@{@"id" : @"obj_7ca5f80b42b6dfca"},
-                                            @{@"id" : @"obj_12128d3aad2aa98f"},
-                                            objectDict]};
+                                             @{@"id" : @"obj_12128d3aad2aa98f"},
+                                               objectDict]};
     
     LobJobModel *jobModel = [LobJobModel initWithDictionary:jobDict];
-    [request createJobWithModel:jobModel withResponse:^(LobJobModel *job, NSError *error) {
+    [request createJobWithModel:jobModel
+                   withResponse:^(LobJobModel *job, NSError *error)
+    {
         NSLog(@"*** Job Create Response ***");
-        NSLog(@"    Job: %@",job);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyJob:job testOrigin:@"Job create"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testJobRetrieve {
+- (void)testJobRetrieve
+{
     NSLog(@"Test Job Retrieve");
 
-    [request retrieveJobWithId:@"job_0e3eff58cb59c935" withResponse:^(LobJobModel *job, NSError *error) {
+    [request retrieveJobWithId:@"job_a32073ac3664e085"
+                  withResponse:^(LobJobModel *job, NSError *error)
+    {
         NSLog(@"*** Job Retrieve Response ***");
-        NSLog(@"    Job: %@",job);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyJob:job testOrigin:@"Job create"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -244,46 +348,70 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Object Tests
  */
 
--(void)testObjectList {
+- (void)testObjectList
+{
     NSLog(@"Test Object List");
 
-    [request listObjectsWithResponse:^(NSArray *objects, NSError *error) {
+    [request listObjectsWithResponse:^(NSArray *objects, NSError *error)
+    {
         NSLog(@"*** Object List Response ***");
-        NSLog(@"    Objects: %@",objects);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqual(objects, @[], @"");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testObjectCreate {
+- (void)testObjectCreate
+{
     NSLog(@"Test Object Create");
 
-    NSDictionary *objectDict = @{@"name" : @"Go Blue", @"setting" : @{@"id" : @"100"},
+    NSDictionary *objectDict = @{@"name" : @"Go Blue",
+                                 @"setting" : @{@"id" : @"100"},
                                  @"file" : @"https://www.lob.com/goblue.pdf"};
     
     LobObjectModel *objectModel = [LobObjectModel initWithDictionary:objectDict];
-    [request createObjectWithModel:objectModel withResponse:^(LobObjectModel *object, NSError *error) {
+    [request createObjectWithModel:objectModel
+                      withResponse:^(LobObjectModel *object, NSError *error)
+    {
         NSLog(@"*** Object Create Response ***");
-        NSLog(@"    Object: %@",object);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyObject:object testOrigin:@"Object retrieve"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testObjectRetrieve {
+- (void)testObjectRetrieve
+{
     NSLog(@"Test Object Retrieve");
 
-    [request retrieveObjectWithId:@"obj_4241a46e01b4f892" withResponse:^(LobObjectModel *object, NSError *error) {
+    [request retrieveObjectWithId:@"obj_7530eea3b78a78a7"
+                     withResponse:^(LobObjectModel *object, NSError *error)
+    {
         NSLog(@"*** Object Retrieve Response ***");
-        NSLog(@"    Object: %@",object);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        [self verifyObject:object testOrigin:@"Object retrieve"];
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testObjectDelete {
+- (void)testObjectDelete
+{
     NSLog(@"Test Object Delete");
 
-    [request deleteObjectWithId:@"obj_4241a46e01b4f892" withResponse:^(NSString *message, NSError *error) {
+    [request deleteObjectWithId:@"obj_4241a46e01b4f892"
+                   withResponse:^(NSString *message, NSError *error)
+    {
         NSLog(@"*** Object Delete Response ***");
-        NSLog(@"    Message: %@",message);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqualObjects(message, @"Success! Object has been deleted", @"");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -292,12 +420,21 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Packaging Tests
  */
 
--(void)testPackaingList {
+- (void)testPackagingList
+{
     NSLog(@"Test Packaging List");
 
-    [request listPackagingsWithResponse:^(NSArray *packagings, NSError *error) {
+    [request listPackagingsWithResponse:^(NSArray *packagings, NSError *error)
+    {
         NSLog(@"*** Packaging List Response ***");
-        NSLog(@"    Packagings: %@",packagings);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        
+        LobPackagingModel *smartPackage = packagings[0];
+        XCTAssertNotNil(smartPackage, @"");
+        XCTAssertEqualObjects(smartPackage.name, @"Smart Packaging", @"Packaging name failure");
+        XCTAssertEqualObjects(smartPackage.packageDescription, @"Automatically determined optimal packaging for safe and secure delivery", @"Packaging description failure");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -306,41 +443,67 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Postcard Tests
  */
 
--(void)testPostcardList {
+- (void)testPostcardList
+{
     NSLog(@"Test Postcard List");
 
-    [request listPostcardsWithResponse:^(NSArray *postcards, NSError *error) {
+    [request listPostcardsWithResponse:^(NSArray *postcards, NSError *error)
+    {
         NSLog(@"*** Postcard List Response ***");
-        NSLog(@"    Postcards: %@",postcards);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqual(postcards, @[], @"");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testPostcardCreate {
+- (void)testPostcardCreate
+{
     NSLog(@"Test Postcard Create");
-
-    NSDictionary *toDict = @{@"name" : @"Harry Zhang", @"address_line1" : @"123 Test Street",
-                             @"address_city" : @"Mountain View", @"address_state" : @"CA",
-                             @"address_zip" : @"94041", @"address_country" : @"US"};
     
-    NSDictionary *postcardDict = @{@"name" : @"Demo Postcard", @"front" : @"https://www.lob.com/postcardfront.pdf",
-                                   @"back" : @"https://www.lob.com/postcardback.pdf", @"to" : toDict,
-                                   @"from" : toDict};
+    NSDictionary *postcardDict = @{@"name" : @"Demo Postcard",
+                                   @"front" : @"https://www.lob.com/postcardfront.pdf",
+                                   @"back" : @"https://www.lob.com/postcardback.pdf",
+                                   @"to" : Test_Address_Harry,
+                                   @"from" : Test_Address_Harry};
    
     LobPostcardModel *postcardModel = [LobPostcardModel initWithDictionary:postcardDict];
-    [request createPostcardWithModel:postcardModel withResponse:^(LobPostcardModel *postcard, NSError *error) {
+    [request createPostcardWithModel:postcardModel
+                        withResponse:^(LobPostcardModel *postcard, NSError *error)
+    {
         NSLog(@"*** Postcard Create Response ***");
-        NSLog(@"    Postcard: %@",postcard);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqualObjects(postcard.name, @"Demo Postcard", @"Postcard retrieve name create");
+        XCTAssertEqualObjects(postcard.message, [NSNull null], @"Postcard retrieve message create");
+        XCTAssertEqualObjects(postcard.status, @"processed", @"Postcard retrieve status create");
+        [self verifyAddressHarry:postcard.toAddress testOrigin:@"Postcard create"];
+        [self verifyAddressHarry:postcard.fromAddress testOrigin:@"Postcard create"];
+        XCTAssertEqualObjects(postcard.price, @"1.00", @"Postcard create");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testPostcardRetrieve {
+- (void)testPostcardRetrieve
+{
     NSLog(@"Test Postcard Retrieve");
 
-    [request retrievePostcardWithId:@"psc_5c002b86ce47537a" withResponse:^(LobPostcardModel *postcard, NSError *error) {
+    [request retrievePostcardWithId:@"psc_17e6425ae08576ce"
+                       withResponse:^(LobPostcardModel *postcard, NSError *error)
+    {
         NSLog(@"*** Postcard Retrieve Response ***");
-        NSLog(@"    Postcard: %@",postcard);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqualObjects(postcard.name, @"Demo Postcard", @"Postcard retrieve name failure");
+        XCTAssertEqualObjects(postcard.message, [NSNull null], @"Postcard retrieve message failure");
+        XCTAssertEqualObjects(postcard.status, @"processed", @"Postcard retrieve status failure");
+        [self verifyAddressHarry:postcard.toAddress testOrigin:@"Postcard retrieve"];
+        [self verifyAddressHarry:postcard.fromAddress testOrigin:@"Postcard retrieve"];
+        
+        XCTAssertEqualObjects(postcard.price, @"1.00", @"Postcard retrieve");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -349,12 +512,22 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Service Tests
  */
 
--(void)testServiceList {
+- (void)testServiceList
+{
     NSLog(@"Test Service List");
 
-    [request listServicesWithResponse:^(NSArray *services, NSError *error) {
+    [request listServicesWithResponse:^(NSArray *services, NSError *error)
+    {
         NSLog(@"*** Service List Response ***");
-        NSLog(@"    Services: %@",services);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        
+        LobServiceModel *certified = services[0];
+        XCTAssertNotNil(certified, @"");
+        
+        XCTAssertEqualObjects(certified.name, @"Certified", @"Service name failure");
+        XCTAssertEqualObjects(certified.serviceDescription, @"Certified First Class USPS", @"Service description failure");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -363,22 +536,50 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Setting Tests
  */
 
--(void)testSettingList {
+- (void)testSettingList
+{
     NSLog(@"Test Setting List");
 
-    [request listSettingsWithResponse:^(NSArray *settings, NSError *error) {
+    [request listSettingsWithResponse:^(NSArray *settings, NSError *error)
+    {
         NSLog(@"*** Setting List Response ***");
-        NSLog(@"    Settings: %@",settings);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+
+        LobSettingModel *colorSetting = settings[1];
+        XCTAssertNotNil(colorSetting, @"");
+        
+        XCTAssertEqualObjects(colorSetting.type, @"Documents", @"Setting type failure");
+        XCTAssertEqualObjects(colorSetting.settingDescription, @"Color Document", @"Setting description failure");
+        XCTAssertEqualObjects(colorSetting.paper, @"20lb Paper Standard", @"Setting paper description failure");
+        XCTAssertEqualObjects(colorSetting.width, @"8.500", @"Setting width failure");
+        XCTAssertEqualObjects(colorSetting.length, @"11.000", @"Setting length failure");
+        XCTAssertEqualObjects(colorSetting.color, @"Color", @"Setting color failure");
+        XCTAssertEqualObjects(colorSetting.notes, @"50 cents per extra page", @"Settings notes failure");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
 
--(void)testSettingRetrieve {
+- (void)testSettingRetrieve
+{
     NSLog(@"Test Setting Retrieve");
 
-    [request retrieveSettingWithId:@"100" withResponse:^(LobSettingModel *setting, NSError *error) {
+    [request retrieveSettingWithId:@"101"
+                      withResponse:^(LobSettingModel *setting, NSError *error)
+    {
         NSLog(@"*** Setting Retrieve Response ***");
-        NSLog(@"    Setting: %@",setting);
+        
+        XCTAssertEqual(request.statusCode, 200, @"");
+        XCTAssertEqualObjects(setting.type, @"Documents", @"Setting type failure");
+        XCTAssertEqualObjects(setting.settingDescription, @"Color Document", @"Setting description failure");
+        XCTAssertEqualObjects(setting.paper, @"20lb Paper Standard", @"Setting paper description failure");
+        XCTAssertEqualObjects(setting.width, @"8.500", @"Setting width failure");
+        XCTAssertEqualObjects(setting.length, @"11.000", @"Setting length failure");
+        XCTAssertEqualObjects(setting.color, @"Color", @"Setting color failure");
+        XCTAssertEqualObjects(setting.notes, @"50 cents per extra page", @"Settings notes failure");
+        
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -387,12 +588,22 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * State Tests
  */
 
--(void)testStateList {
+- (void)testStateList
+{
     NSLog(@"Test State List");
 
-    [request listStatesWithResponse:^(NSArray *states, NSError *error) {
+    [request listStatesWithResponse:^(NSArray *states, NSError *error)
+    {
         NSLog(@"*** State List Response ***");
-        NSLog(@"    States: %@",states);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+        
+        LobStateModel *alabama = states[0];
+        XCTAssertNotNil(alabama, @"");
+        
+        XCTAssertEqualObjects(alabama.name, @"Alabama", @"State name failure");
+        XCTAssertEqualObjects(alabama.shortName, @"AL", @"State short name failure");
+        
         dispatch_semaphore_signal(sem);
     }];
 }
@@ -402,21 +613,93 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Verify Tests
  */
 
--(void)testVerify {
+- (void)testVerify
+{
     NSLog(@"Test Verify Address");
 
     LobAddressModel *model = [[LobAddressModel alloc] initWithDictionary:@{
-                    @"address_line1" : @"220 William T Morrissey Boulevard",
-                    @"address_city" : @"Boston",
-                    @"address_state" : @"MA",
-                    @"address_zip" : @"02125"}];
-    NSLog(@"Model: %@",model);
+                    @"address_line1" : Test_Address_Harry[@"address_line1"],
+                    @"address_city" : Test_Address_Harry[@"address_city"],
+                    @"address_state" : Test_Address_Harry[@"address_state"],
+                    @"address_zip" : Test_Address_Harry[@"address_zip"]}];
     
-    [request verifyAddressModel:model withResponse:^(LobVerifyModel *validation, NSError *error) {
+    [request verifyAddressModel:model
+                   withResponse:^(LobVerifyModel *validation, NSError *error)
+    {
         NSLog(@"*** Verify Address Response ***");
-        NSLog(@"    Validation: %@",validation);
+
+        XCTAssertEqual(request.statusCode, 200, @"");
+
+        XCTAssertEqualObjects(validation.address.addressLine1, @"1600 Amphitheatre Pkwy", @"Verify address line 1 failure");
+        XCTAssertEqualObjects(validation.address.addressCity, @"Mountain View", @"Verify city failure");
+        XCTAssertEqualObjects(validation.address.addressState, @"CA", @"Verify state failure");
+        XCTAssertEqualObjects(validation.address.addressZip, @"94043-1351", @"Verify zip failure");
+        XCTAssertEqualObjects(validation.address.addressCountry, @"United States", @"Verify country failure");
+        
         dispatch_semaphore_signal(sem);
     }];
+}
+
+#pragma mark -
+#pragma mark Verify Methods
+
+-(void)verifyAddressHarry:(LobAddressModel*)addr testOrigin:(NSString*)testOrigin {
+    XCTAssertEqualObjects(addr.name, @"HARRY ZHANG", @"Addr name failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.email, [NSNull null], @"Addr email failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.phone, [NSNull null], @"Addr phone failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressLine1, @"1600 AMPHITHEATRE PKWY", @"Addr address line 1 failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressLine2, @"UNIT 199", @"Addr address line 2 failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressCity, @"MOUNTAIN VIEW", @"Addr city failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressState, @"CA", @"Addr state failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressZip, @"94085", @"Addr zip failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressCountry, @"UNITED STATES", @"Addr country failure: %@", testOrigin);
+}
+
+-(void)verifyBankChase:(LobBankAccountModel*)bank testOrigin:(NSString*)testOrigin {
+    XCTAssertEqualObjects(bank.routingNumber, @"123456789", @"Bank routing number failure: %@", testOrigin);
+    XCTAssertEqualObjects(bank.accountNumber, @"123456789", @"Bank account number failure: %@", testOrigin);
+    XCTAssertEqualObjects(bank.bankCode, @"123456789", @"Bank code failure: %@",testOrigin);
+    
+    [self verifyAddressHarry:bank.accountAddress testOrigin:testOrigin];
+    [self verifyBankAddrChase:bank.bankAddress testOrigin:testOrigin];
+}
+
+-(void)verifyBankAddrChase:(LobAddressModel*)addr testOrigin:(NSString*)testOrigin {
+    XCTAssertEqualObjects(addr.name, @"CHASE BANK", @"Bank addr name failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.email, [NSNull null], @"Bank addr email failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.phone, [NSNull null], @"Bank addr phone failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressLine1, @"55 EDMONDS STREET", @"Bank addr line 1 failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressLine2, [NSNull null], @"Bank addr line 2 failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressCity, @"PALO ALTO", @"Bank addr city failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressState, @"CA", @"Bank addr state failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressZip, @"90081", @"Bank addr zip failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressCountry, @"UNITED STATES", @"Bank addr country failure: %@", testOrigin);
+}
+
+-(void)verifyCheckDemo:(LobCheckModel*)check testOrigin:(NSString*)testOrigin {
+    XCTAssertEqualObjects(check.name, @"Demo Check", @"Check name failure: %@", testOrigin);
+    XCTAssertEqualObjects(check.memo, @"rent", @"Check memo failure: %@", testOrigin);
+    XCTAssertEqualObjects(check.amount, @"2200.00", @"Check amount failure: %@", testOrigin);
+    XCTAssertEqualObjects(check.status, @"processed", @"Check status failure: %@", testOrigin);
+    XCTAssertEqualObjects(check.message, [NSNull null], @"Check message failure: %@", testOrigin);
+
+    [self verifyAddressHarry:check.toAddress testOrigin:testOrigin];
+    [self verifyBankChase:check.bank testOrigin:testOrigin];
+    
+}
+
+-(void)verifyJob:(LobJobModel*)job testOrigin:(NSString*)testOrigin {
+    XCTAssertEqualObjects(job.name, @"Michigan fan letter", @"Job name failure: %@", testOrigin);
+    
+    [self verifyAddressHarry:job.toAddress testOrigin:testOrigin];
+    [self verifyAddressHarry:job.fromAddress testOrigin:testOrigin];
+}
+
+-(void)verifyObject:(LobObjectModel*)object testOrigin:(NSString*)testOrigin {
+    XCTAssertEqualObjects(object.name, @"Go Blue", @"Object name failure: %@", testOrigin);
+    XCTAssertEqualObjects(object.quantity, @"1", @"Object quantity failure: %@", testOrigin);
+    XCTAssertFalse(object.fullBleed, @"Object full bleed failure: %@", testOrigin);
+    XCTAssertFalse(object.doubleSided, @"Object double sided failure: %@", testOrigin);
 }
 
 @end

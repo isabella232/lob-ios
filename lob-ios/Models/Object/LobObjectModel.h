@@ -19,4 +19,13 @@
 @property(nonatomic, strong) LobSettingModel *setting;
 @property(nonatomic, strong) NSString *file;
 
+- (instancetype)initObjectId:(NSString*)objectId;
+
+- (instancetype)initObjectName:(NSString *)name
+                      quantity:(NSString *)quantity
+                   doubleSided:(BOOL)doubleSided
+                     fullBleed:(BOOL)fullBleed
+                       setting:(LobSettingModel *)setting
+                          file:(NSString *)file;
+
 @end

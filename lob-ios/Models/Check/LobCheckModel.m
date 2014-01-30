@@ -13,47 +13,86 @@
 
 @implementation LobCheckModel
 
--(instancetype)initWithDictionary:(NSDictionary *)dict {
+- (instancetype)initWithDictionary:(NSDictionary *)dict
+{
     if(self = [super initWithDictionary:dict]) {
-        _checkId = dict[@"id"];
-        _name = dict[@"name"];
-        _checkNumber = dict[@"check_number"];
-        _memo = dict[@"memo"];
-        _amount = dict[@"amount"];
-        _toAddress = [LobAddressModel initWithDictionary:dict[@"to"]];
-        _bank = [LobBankAccountModel initWithDictionary:dict[@"bank_account"]];
-        _status = dict[@"status"];
-        _message = dict[@"message"];
+        self.checkId = dict[@"id"];
+        self.name = dict[@"name"];
+        self.checkNumber = dict[@"check_number"];
+        self.memo = dict[@"memo"];
+        self.amount = dict[@"amount"];
+        self.toAddress = [LobAddressModel initWithDictionary:dict[@"to"]];
+        self.bank = [LobBankAccountModel initWithDictionary:dict[@"bank_account"]];
+        self.status = dict[@"status"];
+        self.message = dict[@"message"];
     }
+    return self;
+}
+
+- (instancetype)initCheckWithId:(NSString *)checkId
+{
+    return [self initWithDictionary:@{@"id" : checkId}];
+}
+
+- (instancetype)initCheckWithName:(NSString *)name
+                      checkNumber:(NSString *)checkNumber
+                             memo:(NSString *)memo
+                           amount:(NSString *)amount
+                        toAddress:(LobAddressModel *)toAddress
+                      bankAccount:(LobBankAccountModel *)bank
+                           status:(NSString *)status
+                          message:(NSString *)message
+{
+    NSDictionary *dict = @{@"name" : name,
+                           @"check_number" : checkNumber,
+                           @"memo" : memo,
+                           @"amount" : amount,
+                           @"status" : status,
+                           @"message" : message};
+
+    self = [self initWithDictionary:dict];
+    
+    self.toAddress = toAddress;
+    self.bank = bank;
+    
     return self;
 }
 
 #pragma mark -
 #pragma mark Description
 
--(NSString*)description {
+- (NSString *)description
+{
     NSString *format = @"(%@) %@, %@ %@, %@ | %@ | %@ | %@, %@";
-    return [NSString stringWithFormat:format,_checkId,_name,_checkNumber,_memo,_amount,_toAddress,_bank,_status,_message];
+    return [NSString stringWithFormat:format,self.checkId,self.name,self.checkNumber,self.memo,self.amount,self.toAddress,self.bank,self.status,self.message];
 }
 
 #pragma mark -
 #pragma mark Request Methods
 
--(NSString*)urlParamsForCreateRequest {
+- (NSString *)urlParamsForCreateRequest
+{
     NSMutableArray *items = [NSMutableArray array];
     
-    NSArray *nameValues = @[@[@"name" , @"name"],@[@"check_number" , @"checkNumber"],
-                            @[@"memo" , @"memo"], @[@"amount" , @"amount"],
-                            @[@"status" , @"status"], @[@"message" , @"message"]];
+    NSArray *nameValues = @[@[@"name" , @"name"],
+                            @[@"check_number" , @"checkNumber"],
+                            @[@"memo" , @"memo"],
+                            @[@"amount" , @"amount"],
+                            @[@"status" , @"status"],
+                            @[@"message" , @"message"]];
     
-    [LobAbstractModel populateItems:items fromPairs:nameValues onObject:self prefix:@""];
+    [LobAbstractModel populateItems:items
+                          fromPairs:nameValues
+                           onObject:self
+                             prefix:@""];
     
-    if([self toAddress] != NULL) {
-        NSString *addrParams = [[self toAddress] urlParamsForInclusionWithPrefix:@"to"];
+    if(self.toAddress != NULL)
+    {
+        NSString *addrParams = [self.toAddress urlParamsForInclusionWithPrefix:@"to"];
         [items addObject:addrParams];
     }
     
-    [items addObject:[NSString stringWithFormat:@"bank_account=%@",[[self bank] bankId]]];
+    [items addObject:[NSString stringWithFormat:@"bank_account=%@",[self.bank bankId]]];
     
     return [LobAbstractModel paramStringWithItems:items];
 }

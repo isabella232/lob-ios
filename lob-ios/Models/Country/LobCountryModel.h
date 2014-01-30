@@ -14,4 +14,9 @@
 @property(nonatomic, strong) NSString *name;
 @property(nonatomic, strong) NSString *shortName;
 
+- (instancetype)initCountryWithId:(NSString *)countryId;
+
+- (instancetype)initCountryWithName:(NSString *)name
+                          shortName:(NSString *)shortName;
+
 @end

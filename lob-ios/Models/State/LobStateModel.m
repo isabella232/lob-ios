@@ -13,8 +13,10 @@
 @synthesize dateCreated = _dateCreated;
 @synthesize dateModified = _dateModified;
 
--(instancetype)initWithDictionary:(NSDictionary *)dict {
-    if(self = [super init]) {
+- (instancetype)initWithDictionary:(NSDictionary *)dict
+{
+    if(self = [super init])
+    {
         _dateCreated = NULL;
         _dateModified = NULL;
         
@@ -25,10 +27,23 @@
     return self;
 }
 
+- (instancetype)initStateWithId:(NSString*)stateId
+{
+    return [self initWithDictionary:@{@"id" : stateId}];
+}
+
+- (instancetype)initStateWithName:(NSString*)name
+                        shortName:(NSString*)shortName
+{
+    return [self initWithDictionary:@{@"name" : name,
+                                      @"short_name" : shortName}];
+}
+
 #pragma mark -
 #pragma mark Description
 
--(NSString*)description {
+-(NSString *)description
+{
     NSString *format = @"(%@) %@, %@";
     return [NSString stringWithFormat:format,_stateId,_name,_shortName];
 }

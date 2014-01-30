@@ -14,4 +14,7 @@
 @property(nonatomic, strong) NSString *message;
 @property(nonatomic, strong) LobAddressModel *address;
 
+- (instancetype)initVerifyModelWithMessage:(NSString*)message
+                                   address:(LobAddressModel*)address;
+
 @end

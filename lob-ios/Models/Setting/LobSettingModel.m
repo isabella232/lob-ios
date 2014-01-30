@@ -13,29 +13,56 @@
 @synthesize dateCreated = _dateCreated;
 @synthesize dateModified = _dateModified;
 
--(instancetype)initWithDictionary:(NSDictionary *)dict {
-    if(self = [super init]) {
-        _dateCreated = NULL;
-        _dateModified = NULL;
+- (instancetype)initWithDictionary:(NSDictionary *)dict
+{
+    if(self = [super init])
+    {
+        self.dateCreated = NULL;
+        self.dateModified = NULL;
         
-        _settingId = dict[@"id"];
-        _type = dict[@"type"];
-        _description = dict[@"description"];
-        _paper = dict[@"paper"];
-        _width = dict[@"width"];
-        _length = dict[@"length"];
-        _color = dict[@"color"];
-        _notes = dict[@"notes"];
+        self.settingId = dict[@"id"];
+        self.type = dict[@"type"];
+        self.description = dict[@"description"];
+        self.paper = dict[@"paper"];
+        self.width = dict[@"width"];
+        self.length = dict[@"length"];
+        self.color = dict[@"color"];
+        self.notes = dict[@"notes"];
     }
     return self;
+}
+
+- (instancetype)initSettingWithId:(NSString*)settingId
+{
+    return [self initWithDictionary:@{@"id" : settingId}];
+}
+
+- (instancetype)initSettingWithType:(NSString*)type
+                        description:(NSString*)description
+                              paper:(NSString*)paper
+                              witdh:(NSString*)width
+                             length:(NSString*)length
+                              color:(NSString*)color
+                              notes:(NSString*)notes
+{
+    NSDictionary *dict = @{@"type" : type,
+                           @"description" : description,
+                           @"paper" : paper,
+                           @"width" : width,
+                           @"length" : length,
+                           @"color" : color,
+                           @"notes" : notes};
+
+    return [self initWithDictionary:dict];
 }
 
 #pragma mark -
 #pragma mark Description
 
--(NSString*)description {
+- (NSString *)description
+{
     NSString *format = @"(%@) %@, %@ - %@, %@, %@ - %@, %@";
-    return [NSString stringWithFormat:format,_settingId,_type,_description,_paper,_width,_length,_color,_notes];
+    return [NSString stringWithFormat:format,self.settingId,self.type,self.description,self.paper,self.width,self.length,self.color,self.notes];
 }
 
 @end

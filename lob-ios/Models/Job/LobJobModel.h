@@ -25,4 +25,17 @@
 @property(nonatomic, strong) LobServiceModel *service;
 @property(nonatomic, strong) NSArray *objects;
 
+- (instancetype)initJobWithId:(NSString*)jobId;
+
+- (instancetype)initJobWithName:(NSString *)name
+                          price:(NSString *)price
+                      toAddress:(LobAddressModel *)toAddress
+                    fromAddress:(LobAddressModel *)fromAddress
+                       quantity:(NSString *)quantity
+                         status:(NSString *)status
+                       tracking:(NSString *)tracking
+                      packaging:(LobPackagingModel *)packaging
+                        service:(LobServiceModel *)service
+                        objects:(NSArray *)objects;
+
 @end

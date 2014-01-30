@@ -14,4 +14,9 @@
 @property(nonatomic, strong) NSString *name;
 @property(nonatomic, strong) NSString *shortName;
 
+- (instancetype)initStateWithId:(NSString*)stateId;
+
+- (instancetype)initStateWithName:(NSString*)name
+                        shortName:(NSString*)shortName;
+
 @end

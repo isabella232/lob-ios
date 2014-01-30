@@ -10,10 +10,12 @@
 
 @implementation LobAbstractModel
 
--(instancetype)initWithDictionary:(NSDictionary*)dict {
+- (instancetype)initWithDictionary:(NSDictionary *)dict
+{
     if(dict == NULL || [dict isEqual:[NSNull null]]) return NULL;
     
-    if(self = [super init]) {
+    if(self = [super init])
+    {
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
         [dateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss"];
         
@@ -26,14 +28,17 @@
     return self;
 }
 
-+(instancetype)initWithDictionary:(NSDictionary*)dict {
++ (instancetype)initWithDictionary:(NSDictionary *)dict
+{
     if(dict == NULL || [dict isEqual:[NSNull null]]) return NULL;
-    return [[self alloc] initWithDictionary:dict];
+    else return [[self alloc] initWithDictionary:dict];
 }
 
-+(NSArray*)modelsFromArrayOfDictionaries:(NSArray*)array {
++ (NSArray *)modelsFromArrayOfDictionaries:(NSArray *)array
+{
     NSMutableArray *mutableArray = [NSMutableArray array];
-    for(NSDictionary *dict in array) {
+    for(NSDictionary *dict in array)
+    {
         LobAbstractModel *model = [self initWithDictionary:dict];
         [mutableArray addObject:model];
     }
@@ -44,10 +49,13 @@
 #pragma mark -
 #pragma mark Request Methods
 
-+(void)populateItems:(NSMutableArray*)items fromPairs:(NSArray*)pairs onObject:(id)object prefix:(NSString*)prefix {
-    for(NSArray *arr in pairs) {
++ (void)populateItems:(NSMutableArray *)items fromPairs:(NSArray *)pairs onObject:(id)object prefix:(NSString *)prefix
+{
+    for(NSArray *arr in pairs)
+    {
         NSString *value = [object valueForKey:arr[1]];
-        if(value) {
+        if(value && ![value isEqual:[NSNull null]])
+        {
             value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             NSString *item = [LobAbstractModel paramItemWithName:arr[0] andValue:value prefix:prefix];
 
@@ -56,20 +64,23 @@
     }
 }
 
-+(NSString*)paramStringWithItems:(NSArray*)items {
++ (NSString *)paramStringWithItems:(NSArray *)items {
     return [NSString stringWithFormat:@"%@",[items componentsJoinedByString:@"&"]];
 }
 
-+(NSString*)paramItemWithName:(NSString*)name andValue:(NSString*)value prefix:(NSString*)prefix {
++ (NSString *)paramItemWithName:(NSString*)name andValue:(NSString *)value prefix:(NSString *)prefix
+{
     if([prefix isEqualToString:@""]) return [name stringByAppendingFormat:@"=%@",value];
     else return [NSString stringWithFormat:@"%@[%@]=%@",prefix,name,value];
 }
 
--(NSString*)urlParamsForCreateRequest {
+- (NSString *)urlParamsForCreateRequest
+{
     return @"";
 }
 
--(NSString*)urlParamsForInclusionWithPrefix:(NSString*)prefix {
+- (NSString *)urlParamsForInclusionWithPrefix:(NSString *)prefix
+{
     return @"";
 }
 

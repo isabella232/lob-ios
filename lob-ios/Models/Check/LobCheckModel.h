@@ -22,4 +22,15 @@
 @property(nonatomic, strong) NSString *status;
 @property(nonatomic, strong) NSString *message;
 
+- (instancetype)initCheckWithId:(NSString *)checkId;
+
+- (instancetype)initCheckWithName:(NSString *)name
+                      checkNumber:(NSString *)checkNumber
+                             memo:(NSString *)memo
+                           amount:(NSString *)amount
+                        toAddress:(LobAddressModel *)toAddress
+                      bankAccount:(LobBankAccountModel *)bank
+                           status:(NSString *)status
+                          message:(NSString *)message;
+
 @end

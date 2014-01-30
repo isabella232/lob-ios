@@ -13,15 +13,23 @@
 @interface AbstractBlockRequest : NSObject <NSURLConnectionDelegate>
 
 /**
+ * The HTTP status code from the latest request made
+ */
+@property(nonatomic, assign) NSInteger statusCode;
+
+/**
  * Performs a url request on the urlStr location with the given method, calling the edit block before performing the request
  * and finally returning the data in the response block
  */
--(void)getUrlStr:(NSString *)urlStr withMethod:(NSString *)method withEdit:(void(^) (NSMutableURLRequest *request))edit andResponse:(void(^) (NSData *data, NSError *error))response;
+- (void)getUrlStr:(NSString *)urlStr
+      withMethod:(NSString *)method
+        withEdit:(void(^) (NSMutableURLRequest *request))edit
+     andResponse:(void(^) (NSData *data, NSError *error))response;
 
 /**
  * Cancels the current request
  */
--(void)cancel;
+- (void)cancel;
 
 #pragma mark -
 #pragma mark Data Methods
@@ -29,7 +37,7 @@
 /**
  * Given theData the function returns the base 64 encoded string representation
  */
-+(NSString*)base64forData:(NSData*)theData;
++ (NSString*)base64forData:(NSData*)theData;
 
 #pragma mark -
 #pragma mark URL Methods
@@ -37,6 +45,6 @@
 /**
  * Given an array of url parameters of the form 'str=str' the method returns the url extension string
  */
--(NSString*)urlParameterStringFromParameterArray:(NSArray *)array;
+- (NSString*)urlParameterStringFromParameterArray:(NSArray *)array;
 
 @end
