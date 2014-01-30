@@ -49,6 +49,7 @@ Lob requests are all found in the Requests folder of the iOS client. All request
   request = [[LobRequest alloc] initWithAPIKey:@""];
   [request listAddressesWithResponse:^(NSArray *addresses, NSError *error) {
         NSLog(@"*** Address List Response ***");
+        NSLog(@"HTTP Status Code: %i", request.statusCode);
         NSLog(@"    Addresses: %@",addresses);
     }];
 }
