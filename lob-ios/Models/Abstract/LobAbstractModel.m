@@ -53,13 +53,21 @@
 {
     for(NSArray *arr in pairs)
     {
-        NSString *value = [object valueForKey:arr[1]];
-        if(value && ![value isEqual:[NSNull null]])
-        {
-            value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            NSString *item = [LobAbstractModel paramItemWithName:arr[0] andValue:value prefix:prefix];
-
-            [items addObject:item];
+        if ([arr count] > 0) {
+            id value = [object valueForKey:arr[1]];
+            NSString *valueString = nil;
+            //BOOL's are actually nsnumbers under the hood
+            if ([value isKindOfClass:[NSNumber class]]) {
+                valueString = ([value boolValue]) ? @"True" : @"False";
+            } else if ([value isKindOfClass:[NSString class]]) {
+                valueString = (NSString *)value;
+            }
+            if (valueString) {
+                valueString = [valueString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                NSString *item = [LobAbstractModel paramItemWithName:arr[0] andValue:value prefix:prefix];
+                
+                [items addObject:item];
+            }
         }
     }
 }
