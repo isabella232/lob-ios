@@ -80,6 +80,7 @@
     NSMutableArray *items = [NSMutableArray array];
     
     NSArray *nameValues = @[@[@"name" , @"name"],
+                            @[@"full_bleed", @"fullBleed"],
                             @[@"message" , @"message"],
                             @[@"status" , @"status"],
                             @[@"price" , @"price"],
