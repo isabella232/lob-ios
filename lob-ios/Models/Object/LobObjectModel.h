@@ -22,6 +22,7 @@
 
 - (instancetype)initObjectId:(NSString*)objectId;
 
+// If file is a local file path, localFile needs to be set to YES
 - (instancetype)initObjectName:(NSString *)name
                       quantity:(NSString *)quantity
                    doubleSided:(BOOL)doubleSided
