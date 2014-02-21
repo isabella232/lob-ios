@@ -366,7 +366,9 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 - (void)testObjectCreate
 {
     NSLog(@"Test Object Create");
-
+    
+    
+    
     NSDictionary *objectDict = @{@"name" : @"Go Blue",
                                  @"setting" : @{@"id" : @"100"},
                                  @"file" : @"https://www.lob.com/goblue.pdf"};
@@ -378,10 +380,42 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         NSLog(@"*** Object Create Response ***");
 
         XCTAssertEqual(request.statusCode, 200, @"");
-        [self verifyObject:object testOrigin:@"Object retrieve"];
+        [self verifyObject:object testOrigin:@"Object create"];
         
         dispatch_semaphore_signal(sem);
     }];
+}
+
+- (void)testObjectLocalCreate
+{
+    NSLog(@"Test Object Local Create");
+    
+    NSString *zaPDFPath = @"";
+    for (NSBundle *bundle in [NSBundle allBundles]) {
+        NSString *path = [bundle pathForResource:@"zalogo" ofType:@"pdf"];
+        if (path)
+        {
+            zaPDFPath = path;
+        }
+    }
+    
+    NSDictionary *objectDict = @{@"name" : @"Go Blue",
+                                 @"setting" : @{@"id" : @"100"},
+                                 @"file" : zaPDFPath};
+    
+    LobObjectModel *objectModel = [LobObjectModel initWithDictionary:objectDict];
+    objectModel.localFilePath = YES;
+    
+    [request createObjectWithModel:objectModel
+                      withResponse:^(LobObjectModel *object, NSError *error)
+     {
+         NSLog(@"*** Object Create Local Response ***");
+         
+         XCTAssertEqual(request.statusCode, 200, @"");
+         [self verifyObject:object testOrigin:@"Object create local"];
+         
+         dispatch_semaphore_signal(sem);
+     }];
 }
 
 - (void)testObjectRetrieve
@@ -480,7 +514,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         XCTAssertEqualObjects(postcard.status, @"processed", @"Postcard retrieve status create");
         [self verifyAddressHarry:postcard.toAddress testOrigin:@"Postcard create"];
         [self verifyAddressHarry:postcard.fromAddress testOrigin:@"Postcard create"];
-        XCTAssertEqualObjects(postcard.price, @"1.00", @"Postcard create");
         
         dispatch_semaphore_signal(sem);
     }];

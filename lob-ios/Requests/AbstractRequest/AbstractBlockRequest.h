@@ -27,6 +27,11 @@
      andResponse:(void(^) (NSData *data, NSError *error))response;
 
 /**
+ * Performs the given url request returning data in the response block
+ */
+- (void)performRequest:(NSMutableURLRequest *)request withResponse:(void(^) (NSData *data, NSError *error))response;
+
+/**
  * Cancels the current request
  */
 - (void)cancel;

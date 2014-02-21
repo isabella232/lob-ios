@@ -48,6 +48,7 @@
                      fullBleed:(BOOL)fullBleed
                        setting:(LobSettingModel *)setting
                           file:(NSString *)file
+                 localFilePath:(BOOL)localFile
 {
     NSDictionary *dict = @{@"name" : name,
                            @"quantity" : quantity,

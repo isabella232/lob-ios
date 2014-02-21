@@ -18,6 +18,7 @@
 @property(nonatomic, assign) BOOL fullBleed;
 @property(nonatomic, strong) LobSettingModel *setting;
 @property(nonatomic, strong) NSString *file;
+@property(nonatomic, assign) BOOL localFilePath;
 
 - (instancetype)initObjectId:(NSString*)objectId;
 
@@ -26,6 +27,7 @@
                    doubleSided:(BOOL)doubleSided
                      fullBleed:(BOOL)fullBleed
                        setting:(LobSettingModel *)setting
-                          file:(NSString *)file;
+                          file:(NSString *)file
+                 localFilePath:(BOOL)localFile;
 
 @end

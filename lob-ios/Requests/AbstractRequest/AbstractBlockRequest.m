@@ -37,11 +37,6 @@ typedef void (^ResponseCallback)(NSData *data, NSError *error);
     self.request.cachePolicy = NSURLRequestReloadIgnoringCacheData;
     self.request.timeoutInterval = 60;
     
-    NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    for(NSHTTPCookie *cookie in [cookieStorage cookiesForURL:[NSURL URLWithString:urlStr]]) {
-        [cookieStorage deleteCookie:cookie];
-    }
-    
     edit(self.request);
     
     self.callback = response;
@@ -51,6 +46,20 @@ typedef void (^ResponseCallback)(NSData *data, NSError *error);
     self.connection = [[NSURLConnection alloc] initWithRequest:self.request delegate:self];
     [self.connection start];
     
+}
+
+- (void)performRequest:(NSMutableURLRequest *)request withResponse:(void(^) (NSData *data, NSError *error))response
+{
+    self.request = request;
+    self.request.cachePolicy = NSURLRequestReloadIgnoringCacheData;
+    self.request.timeoutInterval = 60;
+    
+    self.callback = response;
+    self.requestData = [NSMutableData data];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    self.connection = [[NSURLConnection alloc] initWithRequest:self.request delegate:self];
+    [self.connection start];
 }
 
 - (void)cancel

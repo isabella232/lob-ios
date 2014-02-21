@@ -8,6 +8,9 @@
 //
 
 #import "LobRequest.h"
+
+#import "AFNetworking.h"
+
 #import "LobAddressModel.h"
 #import "LobBankAccountModel.h"
 #import "LobCheckModel.h"
@@ -284,14 +287,56 @@
 - (void)createObjectWithModel:(LobObjectModel* )object withResponse:(void(^) (LobObjectModel *object, NSError *error))response
 {
     NSString *urlStr = [URLStr_Base stringByAppendingString:URLStr_Objects];
+    //NSURL *url = [NSURL URLWithString:urlStr];
     
-    [self createModelWithURLStr:urlStr
-                         params:[object urlParamsForCreateRequest]
-              withResponseClass:NSStringFromClass([LobObjectModel class])
-                    andResponse:^(LobAbstractModel *model, NSError *error)
+    if(object.localFilePath)
     {
-        response((LobObjectModel* )model,error);
-    }];
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/html",@"application/json",nil];
+        
+        NSString *user = [self.apiKey substringToIndex:self.apiKey.length-1];
+        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:user password:@""];
+        
+        NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
+        if(object.name) paramDict[@"name"] = object.name;
+        paramDict[@"setting_id"] = object.setting.settingId;
+        if(object.quantity) paramDict[@"quantity"] = object.quantity;
+        paramDict[@"double_sided"] = object.doubleSided ? @"1" : @"0";
+        
+        
+        [manager POST:urlStr parameters:@{} constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
+        {
+            [formData throttleBandwidthWithPacketSize:kAFUploadStream3GSuggestedPacketSize delay:kAFUploadStream3GSuggestedDelay];
+         
+            NSData *data = [NSData dataWithContentsOfFile:object.file];
+            [formData appendPartWithFileData:data name:@"file" fileName:@"file" mimeType:@"application/pdf"];;
+            [formData appendPartWithFormData:[object.name dataUsingEncoding:NSUTF8StringEncoding] name:@"name"];
+            [formData appendPartWithFormData:[object.setting.settingId dataUsingEncoding:NSUTF8StringEncoding] name:@"setting_id"];
+        }
+        edit:^(NSMutableURLRequest *request){}
+        success:^(AFHTTPRequestOperation *operation, id responseObject)
+        {
+            NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:nil];
+            self.statusCode = operation.response.statusCode;
+            response([LobObjectModel initWithDictionary:responseDict],NULL);
+        }
+        failure:^(AFHTTPRequestOperation *operation, NSError *error)
+        {
+            self.statusCode = operation.response.statusCode;
+            response(NULL,error);
+        }];
+    }
+    else
+    {
+        [self createModelWithURLStr:urlStr params:[object urlParamsForCreateRequest]
+                  withResponseClass:NSStringFromClass([LobObjectModel class])
+                        andResponse:^(LobAbstractModel *model, NSError *error)
+         {
+             response((LobObjectModel* )model,error);
+         }];
+    }
 }
 
 - (void)retrieveObjectWithId:(NSString* )objectId
