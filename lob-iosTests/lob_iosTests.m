@@ -20,7 +20,7 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
                              @"address_city" : @"MOUNTAIN VIEW", \
                              @"address_state" : @"CA", \
                              @"address_zip" : @"94085", \
-                             @"address_country" : @"UNITED STATES"}
+                             @"address_country" : @"US"}
 
 #define Test_BankAddr_Chase @{@"name" : @"Chase Bank", \
                               @"address_line1" : @"55 Edmonds Street", \
@@ -29,7 +29,7 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
                               @"address_zip" : @"90081", \
                               @"address_country" : @"US"}
 
-#define Test_Bank_Chase @{@"routing_number" : @"123456789", \
+#define Test_Bank_Chase @{@"routing_number" : @"122100024", \
                           @"account_number" : @"123456789", \
                           @"bank_code" : @"123456789", \
                           @"bank_address" : Test_BankAddr_Chase, \
@@ -75,19 +75,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
  * Address Tests
  */
 
--(void)testAddressInit
-{
-    LobAddressModel *dictInitAddress = [[LobAddressModel alloc] initWithDictionary:Test_Address_Harry];
-    
-    [self verifyAddressHarry:dictInitAddress testOrigin:@"Address init with dict"];
-    
-    LobAddressModel *paramInitAddress = [[LobAddressModel alloc] initAddressWithName:Test_Address_Harry[@"name"] email:Test_Address_Harry[@"email"] phone:Test_Address_Harry[@"phone"] addressLine1:Test_Address_Harry[@"address_line1"] addressLine2:Test_Address_Harry[@"address_line2"] addressCity:Test_Address_Harry[@"address_city"] addressState:Test_Address_Harry[@"address_state"] addressZip:Test_Address_Harry[@"address_zip"] addressCountry:Test_Address_Harry[@"address_country"]];
-    
-    [self verifyAddressHarry:paramInitAddress testOrigin:@"Address init with params"];
-    
-    dispatch_semaphore_signal(sem);
-}
-
 - (void)testAddressList
 {
     NSLog(@"Test Address List");
@@ -115,7 +102,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
                        withResponse:^(LobAddressModel *addr, NSError *error)
     {
         NSLog(@"*** Address Create Response ***");
-        
         XCTAssertEqual(request.statusCode, 200, @"");
         [self verifyAddressHarry:addr testOrigin:@"Address create"];
         
@@ -149,7 +135,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         NSLog(@"*** Address Delete Response ***");
         
         XCTAssertEqual(request.statusCode, 200, @"");
-        XCTAssertEqualObjects(message, @"Success! Address has been deleted", @"");
         
         dispatch_semaphore_signal(sem);
     }];
@@ -195,7 +180,7 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 {
     NSLog(@"Test Bank Account Retrieve");
 
-    [request retrieveBankAccountWithId:@"bank_8d71faaa228d866"
+    [request retrieveBankAccountWithId:@"bank_0c9175a2e7627e0"
                           withResponse:^(LobBankAccountModel *account, NSError *error)
     {
         NSLog(@"*** Bank Account Retrieve Response ***");
@@ -444,7 +429,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         NSLog(@"*** Object Delete Response ***");
         
         XCTAssertEqual(request.statusCode, 200, @"");
-        XCTAssertEqualObjects(message, @"Success! Object has been deleted", @"");
         
         dispatch_semaphore_signal(sem);
     }];
@@ -558,8 +542,8 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         LobServiceModel *certified = services[0];
         XCTAssertNotNil(certified, @"");
         
-        XCTAssertEqualObjects(certified.name, @"Certified", @"Service name failure");
-        XCTAssertEqualObjects(certified.serviceDescription, @"Certified First Class USPS", @"Service description failure");
+        XCTAssertEqualObjects(certified.name, @"Registered Mail", @"Service name failure");
+        XCTAssertEqualObjects(certified.serviceDescription, @"Registered USPS Mail", @"Service description failure");
         
         dispatch_semaphore_signal(sem);
     }];
@@ -579,16 +563,16 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 
         XCTAssertEqual(request.statusCode, 200, @"");
 
-        LobSettingModel *colorSetting = settings[1];
-        XCTAssertNotNil(colorSetting, @"");
+        LobSettingModel *bwSetting = settings[1];
+        XCTAssertNotNil(bwSetting, @"");
         
-        XCTAssertEqualObjects(colorSetting.type, @"Documents", @"Setting type failure");
-        XCTAssertEqualObjects(colorSetting.settingDescription, @"Color Document", @"Setting description failure");
-        XCTAssertEqualObjects(colorSetting.paper, @"20lb Paper Standard", @"Setting paper description failure");
-        XCTAssertEqualObjects(colorSetting.width, @"8.500", @"Setting width failure");
-        XCTAssertEqualObjects(colorSetting.length, @"11.000", @"Setting length failure");
-        XCTAssertEqualObjects(colorSetting.color, @"Color", @"Setting color failure");
-        XCTAssertEqualObjects(colorSetting.notes, @"50 cents per extra page", @"Settings notes failure");
+        XCTAssertEqualObjects(bwSetting.type, @"documents", @"Setting type failure");
+        XCTAssertEqualObjects(bwSetting.settingDescription, @"black and white document", @"Setting description failure");
+        XCTAssertEqualObjects(bwSetting.paper, @"20lb paper standard", @"Setting paper description failure");
+        XCTAssertEqualObjects(bwSetting.width, @"8.500", @"Setting width failure");
+        XCTAssertEqualObjects(bwSetting.length, @"11.000", @"Setting length failure");
+        XCTAssertEqualObjects(bwSetting.color, @"black and white", @"Setting color failure");
+        XCTAssertEqualObjects(bwSetting.notes, @"12 cents per extra page", @"Settings notes failure");
         
         dispatch_semaphore_signal(sem);
     }];
@@ -604,12 +588,12 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         NSLog(@"*** Setting Retrieve Response ***");
         
         XCTAssertEqual(request.statusCode, 200, @"");
-        XCTAssertEqualObjects(setting.type, @"Documents", @"Setting type failure");
-        XCTAssertEqualObjects(setting.settingDescription, @"Color Document", @"Setting description failure");
-        XCTAssertEqualObjects(setting.paper, @"20lb Paper Standard", @"Setting paper description failure");
+        XCTAssertEqualObjects(setting.type, @"documents", @"Setting type failure");
+        XCTAssertEqualObjects(setting.settingDescription, @"color document", @"Setting description failure");
+        XCTAssertEqualObjects(setting.paper, @"20lb paper standard", @"Setting paper description failure");
         XCTAssertEqualObjects(setting.width, @"8.500", @"Setting width failure");
         XCTAssertEqualObjects(setting.length, @"11.000", @"Setting length failure");
-        XCTAssertEqualObjects(setting.color, @"Color", @"Setting color failure");
+        XCTAssertEqualObjects(setting.color, @"color", @"Setting color failure");
         XCTAssertEqualObjects(setting.notes, @"50 cents per extra page", @"Settings notes failure");
         
         
@@ -663,11 +647,11 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 
         XCTAssertEqual(request.statusCode, 200, @"");
 
-        XCTAssertEqualObjects(validation.address.addressLine1, @"1600 Amphitheatre Pkwy", @"Verify address line 1 failure");
-        XCTAssertEqualObjects(validation.address.addressCity, @"Mountain View", @"Verify city failure");
+        XCTAssertEqualObjects(validation.address.addressLine1, @"1600 AMPHITHEATRE PKWY", @"Verify address line 1 failure");
+        XCTAssertEqualObjects(validation.address.addressCity, @"MOUNTAIN VIEW", @"Verify city failure");
         XCTAssertEqualObjects(validation.address.addressState, @"CA", @"Verify state failure");
         XCTAssertEqualObjects(validation.address.addressZip, @"94043-1351", @"Verify zip failure");
-        XCTAssertEqualObjects(validation.address.addressCountry, @"United States", @"Verify country failure");
+        XCTAssertEqualObjects(validation.address.addressCountry, @"US", @"Verify country failure");
         
         dispatch_semaphore_signal(sem);
     }];
@@ -683,13 +667,13 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
     XCTAssertEqualObjects(addr.addressLine1, @"1600 AMPHITHEATRE PKWY", @"Addr address line 1 failure: %@", testOrigin);
     XCTAssertEqualObjects(addr.addressLine2, @"UNIT 199", @"Addr address line 2 failure: %@", testOrigin);
     XCTAssertEqualObjects(addr.addressCity, @"MOUNTAIN VIEW", @"Addr city failure: %@", testOrigin);
-    XCTAssertEqualObjects(addr.addressState, @"CA", @"Addr state failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressState, @"California", @"Addr state failure: %@", testOrigin);
     XCTAssertEqualObjects(addr.addressZip, @"94085", @"Addr zip failure: %@", testOrigin);
-    XCTAssertEqualObjects(addr.addressCountry, @"UNITED STATES", @"Addr country failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressCountry, @"United States", @"Addr country failure: %@", testOrigin);
 }
 
 -(void)verifyBankChase:(LobBankAccountModel*)bank testOrigin:(NSString*)testOrigin {
-    XCTAssertEqualObjects(bank.routingNumber, @"123456789", @"Bank routing number failure: %@", testOrigin);
+    XCTAssertEqualObjects(bank.routingNumber, @"122100024", @"Bank routing number failure: %@", testOrigin);
     XCTAssertEqualObjects(bank.accountNumber, @"123456789", @"Bank account number failure: %@", testOrigin);
     XCTAssertEqualObjects(bank.bankCode, @"123456789", @"Bank code failure: %@",testOrigin);
     
@@ -698,15 +682,15 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 }
 
 -(void)verifyBankAddrChase:(LobAddressModel*)addr testOrigin:(NSString*)testOrigin {
-    XCTAssertEqualObjects(addr.name, @"CHASE BANK", @"Bank addr name failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.name, @"Chase Bank", @"Bank addr name failure: %@", testOrigin);
     XCTAssertEqualObjects(addr.email, [NSNull null], @"Bank addr email failure: %@", testOrigin);
     XCTAssertEqualObjects(addr.phone, [NSNull null], @"Bank addr phone failure: %@", testOrigin);
-    XCTAssertEqualObjects(addr.addressLine1, @"55 EDMONDS STREET", @"Bank addr line 1 failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressLine1, @"55 Edmonds Street", @"Bank addr line 1 failure: %@", testOrigin);
     XCTAssertEqualObjects(addr.addressLine2, [NSNull null], @"Bank addr line 2 failure: %@", testOrigin);
-    XCTAssertEqualObjects(addr.addressCity, @"PALO ALTO", @"Bank addr city failure: %@", testOrigin);
-    XCTAssertEqualObjects(addr.addressState, @"CA", @"Bank addr state failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressCity, @"Palo Alto", @"Bank addr city failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressState, @"California", @"Bank addr state failure: %@", testOrigin);
     XCTAssertEqualObjects(addr.addressZip, @"90081", @"Bank addr zip failure: %@", testOrigin);
-    XCTAssertEqualObjects(addr.addressCountry, @"UNITED STATES", @"Bank addr country failure: %@", testOrigin);
+    XCTAssertEqualObjects(addr.addressCountry, @"United States", @"Bank addr country failure: %@", testOrigin);
 }
 
 -(void)verifyCheckDemo:(LobCheckModel*)check testOrigin:(NSString*)testOrigin {
@@ -730,7 +714,7 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 
 -(void)verifyObject:(LobObjectModel*)object testOrigin:(NSString*)testOrigin {
     XCTAssertEqualObjects(object.name, @"Go Blue", @"Object name failure: %@", testOrigin);
-    XCTAssertEqualObjects(object.quantity, @"1", @"Object quantity failure: %@", testOrigin);
+    XCTAssertEqualObjects(object.quantity, @1, @"Object quantity failure: %@", testOrigin);
     XCTAssertFalse(object.fullBleed, @"Object full bleed failure: %@", testOrigin);
     XCTAssertFalse(object.doubleSided, @"Object double sided failure: %@", testOrigin);
 }
