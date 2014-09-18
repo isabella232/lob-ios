@@ -22,6 +22,13 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
                              @"address_zip" : @"94085", \
                              @"address_country" : @"US"}
 
+#define Test_Address_Error @{@"name" : @"HARRY ZHANG", \
+                            @"address_line2" : @"UNIT 199", \
+                            @"address_city" : @"MOUNTAIN VIEW", \
+                            @"address_state" : @"CA", \
+                            @"address_zip" : @"94085", \
+                            @"address_country" : @"US"}
+
 #define Test_BankAddr_Chase @{@"name" : @"Chase Bank", \
                               @"address_line1" : @"55 Edmonds Street", \
                               @"address_city" : @"Palo Alto", \
@@ -107,6 +114,24 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         
         dispatch_semaphore_signal(sem);
     }];
+}
+
+- (void)testAddressCreateError
+{
+    NSLog(@"Test Address Create Error");
+    
+    
+    LobAddressModel *addrModel = [LobAddressModel initWithDictionary:Test_Address_Error];
+    
+    [request createAddressWithModel:addrModel
+                       withResponse:^(LobAddressModel *addr, NSError *error)
+     {
+         NSLog(@"*** Address Create Response ***");
+         XCTAssertEqual(request.statusCode, 200, @"");
+         [self verifyAddressHarry:addr testOrigin:@"Address create"];
+         
+         dispatch_semaphore_signal(sem);
+     }];
 }
 
 - (void)testAddressRetrieve

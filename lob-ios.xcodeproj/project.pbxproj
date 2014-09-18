@@ -62,6 +62,7 @@
 		CE9F686518773833006590CC /* LobBankAccountModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9F686418773833006590CC /* LobBankAccountModel.m */; };
 		CE9F686C187739B7006590CC /* AbstractBlockRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9F686B187739B7006590CC /* AbstractBlockRequest.m */; };
 		CE9F686F187739C0006590CC /* LobRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9F686E187739C0006590CC /* LobRequest.m */; };
+		FA172BBB19C22CC60036E7C5 /* LobErrorModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FA172BBA19C22CC60036E7C5 /* LobErrorModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -148,6 +149,8 @@
 		CE9F686B187739B7006590CC /* AbstractBlockRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AbstractBlockRequest.m; path = Requests/AbstractRequest/AbstractBlockRequest.m; sourceTree = "<group>"; };
 		CE9F686D187739C0006590CC /* LobRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LobRequest.h; path = Requests/Lob/LobRequest.h; sourceTree = "<group>"; };
 		CE9F686E187739C0006590CC /* LobRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LobRequest.m; path = Requests/Lob/LobRequest.m; sourceTree = "<group>"; };
+		FA172BB919C22CC60036E7C5 /* LobErrorModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobErrorModel.h; sourceTree = "<group>"; };
+		FA172BBA19C22CC60036E7C5 /* LobErrorModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LobErrorModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -310,6 +313,7 @@
 				CE9F6840187735C2006590CC /* BankAccount */,
 				CE9F683F187735C0006590CC /* Check */,
 				CE9F683E187735BA006590CC /* Country */,
+				FA172BB819C22CC60036E7C5 /* Error */,
 				CE9F683D187735B8006590CC /* Job */,
 				CE9F683C187735B6006590CC /* Object */,
 				CE9F683B187735B4006590CC /* Packaging */,
@@ -439,6 +443,16 @@
 			name = Lob;
 			sourceTree = "<group>";
 		};
+		FA172BB819C22CC60036E7C5 /* Error */ = {
+			isa = PBXGroup;
+			children = (
+				FA172BB919C22CC60036E7C5 /* LobErrorModel.h */,
+				FA172BBA19C22CC60036E7C5 /* LobErrorModel.m */,
+			);
+			name = Error;
+			path = Models/Error;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -532,6 +546,7 @@
 				CE067DDC18A3362C009430A4 /* AFURLConnectionOperation.m in Sources */,
 				CE067DE218A3362C009430A4 /* AFURLSessionManager.m in Sources */,
 				CE9F68591877380C006590CC /* LobObjectModel.m in Sources */,
+				FA172BBB19C22CC60036E7C5 /* LobErrorModel.m in Sources */,
 				CE9F686518773833006590CC /* LobBankAccountModel.m in Sources */,
 				CE41427F1881D18E00E5DB04 /* LobAbstractModel.m in Sources */,
 				CE9F6853187737F5006590CC /* LobPostcardModel.m in Sources */,

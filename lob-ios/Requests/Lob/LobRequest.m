@@ -524,8 +524,8 @@
     andResponse:^(NSData *data, NSError *error)
     {
         NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
-
-        response([NSClassFromString(classStr) initWithDictionary:responseDict],error);
+        
+        response([NSClassFromString(@"LobErrorModel") initWithDictionary:responseDict],error);
     }];
 }
 
