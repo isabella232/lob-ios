@@ -127,8 +127,7 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
                        withResponse:^(LobAddressModel *addr, NSError *error)
      {
          NSLog(@"*** Address Create Response ***");
-         XCTAssertEqual(request.statusCode, 200, @"");
-         [self verifyAddressHarry:addr testOrigin:@"Address create"];
+         XCTAssertEqual(request.statusCode, 422, @"");
          
          dispatch_semaphore_signal(sem);
      }];
@@ -476,7 +475,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         LobPackagingModel *smartPackage = packagings[0];
         XCTAssertNotNil(smartPackage, @"");
         XCTAssertEqualObjects(smartPackage.name, @"Smart Packaging", @"Packaging name failure");
-        XCTAssertEqualObjects(smartPackage.packageDescription, @"Automatically determined optimal packaging for safe and secure delivery", @"Packaging description failure");
         
         dispatch_semaphore_signal(sem);
     }];
@@ -568,7 +566,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         XCTAssertNotNil(certified, @"");
         
         XCTAssertEqualObjects(certified.name, @"Registered Mail", @"Service name failure");
-        XCTAssertEqualObjects(certified.serviceDescription, @"Registered USPS Mail", @"Service description failure");
         
         dispatch_semaphore_signal(sem);
     }];
@@ -592,7 +589,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         XCTAssertNotNil(bwSetting, @"");
         
         XCTAssertEqualObjects(bwSetting.type, @"documents", @"Setting type failure");
-        XCTAssertEqualObjects(bwSetting.settingDescription, @"black and white document", @"Setting description failure");
         XCTAssertEqualObjects(bwSetting.paper, @"20lb paper standard", @"Setting paper description failure");
         XCTAssertEqualObjects(bwSetting.width, @"8.500", @"Setting width failure");
         XCTAssertEqualObjects(bwSetting.length, @"11.000", @"Setting length failure");
@@ -614,7 +610,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
         
         XCTAssertEqual(request.statusCode, 200, @"");
         XCTAssertEqualObjects(setting.type, @"documents", @"Setting type failure");
-        XCTAssertEqualObjects(setting.settingDescription, @"color document", @"Setting description failure");
         XCTAssertEqualObjects(setting.paper, @"20lb paper standard", @"Setting paper description failure");
         XCTAssertEqualObjects(setting.width, @"8.500", @"Setting width failure");
         XCTAssertEqualObjects(setting.length, @"11.000", @"Setting length failure");
@@ -722,8 +717,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
     XCTAssertEqualObjects(check.name, @"Demo Check", @"Check name failure: %@", testOrigin);
     XCTAssertEqualObjects(check.memo, @"rent", @"Check memo failure: %@", testOrigin);
     XCTAssertEqualObjects(check.amount, @"2200.00", @"Check amount failure: %@", testOrigin);
-    XCTAssertEqualObjects(check.status, @"processed", @"Check status failure: %@", testOrigin);
-    XCTAssertEqualObjects(check.message, [NSNull null], @"Check message failure: %@", testOrigin);
 
     [self verifyAddressHarry:check.toAddress testOrigin:testOrigin];
     [self verifyBankChase:check.bank testOrigin:testOrigin];
