@@ -315,7 +315,6 @@
             [formData appendPartWithFormData:[object.name dataUsingEncoding:NSUTF8StringEncoding] name:@"name"];
             [formData appendPartWithFormData:[object.setting.settingId dataUsingEncoding:NSUTF8StringEncoding] name:@"setting_id"];
         }
-        edit:^(NSMutableURLRequest *request){}
         success:^(AFHTTPRequestOperation *operation, id responseObject)
         {
             NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:nil];
@@ -525,7 +524,7 @@
     {
         NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
         
-        response([NSClassFromString(@"LobErrorModel") initWithDictionary:responseDict],error);
+        response([NSClassFromString(classStr) initWithDictionary:responseDict],error);
     }];
 }
 
