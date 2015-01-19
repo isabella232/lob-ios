@@ -38,8 +38,8 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 
 #define Test_Bank_Chase @{@"routing_number" : @"122100024", \
                           @"account_number" : @"123456789", \
-                          @"bank_code" : @"123456789", \
                           @"bank_address" : Test_BankAddr_Chase, \
+                          @"signatory" : @"John Doe", \
                           @"account_address" : Test_Address_Harry}
 
 #define Test_Check_Demo @{@"name" : @"Demo Check", \
@@ -695,7 +695,6 @@ static NSString *testApiKey = @"test_0dc8d51e0acffcb1880e0f19c79b2f5b0cc";
 -(void)verifyBankChase:(LobBankAccountModel*)bank testOrigin:(NSString*)testOrigin {
     XCTAssertEqualObjects(bank.routingNumber, @"122100024", @"Bank routing number failure: %@", testOrigin);
     XCTAssertEqualObjects(bank.accountNumber, @"123456789", @"Bank account number failure: %@", testOrigin);
-    XCTAssertEqualObjects(bank.bankCode, @"123456789", @"Bank code failure: %@",testOrigin);
     
     [self verifyAddressHarry:bank.accountAddress testOrigin:testOrigin];
     [self verifyBankAddrChase:bank.bankAddress testOrigin:testOrigin];
