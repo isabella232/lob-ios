@@ -1,3 +1,5 @@
+## PLEASE NOTE: The IOS Wrapper only supports the latest version of the API. For more information about versioning please check out the [documentation](https://lob.com/docs).
+
 Lob.com iOS Client
 ==================
 
