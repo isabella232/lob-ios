@@ -1,4 +1,4 @@
-## PLEASE NOTE: The IOS Wrapper only supports the latest version of the API. For more information about versioning please check out the [documentation](https://lob.com/docs).
+## PLEASE NOTE: The iOS Wrapper is no longer officially supported. It is recommended that users integrate with the Lob API on the server-side of their applications, as this is safer than integration on the client-side.
 
 Lob.com iOS Client
 ==================
